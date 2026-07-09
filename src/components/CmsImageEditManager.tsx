@@ -125,7 +125,7 @@ export default function CmsImageEditManager() {
               type="button"
               aria-label="Change image"
               style={{ pointerEvents: "auto" }}
-              className="absolute inset-0 flex items-center justify-center bg-black/0 outline-2 outline-dashed outline-offset-[-2px] outline-[#00FFD2] transition hover:bg-black/40"
+              className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 outline-2 outline-dashed outline-offset-[-2px] outline-[#00FFD2] transition hover:bg-black/40 hover:opacity-100"
               onMouseDown={(e) => e.preventDefault()}
               onClick={(e) => {
                 e.stopPropagation();
