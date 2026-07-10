@@ -1,9 +1,16 @@
 {
-  "name": "@pen/cms-live-preview",
+  "name": "@riaz9191/cms-live-preview",
   "version": "0.1.2",
   "private": false,
   "type": "module",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/riaz9191/pen-cms-preview.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

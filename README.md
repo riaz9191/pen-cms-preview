@@ -1,17 +1,40 @@
-# @pen/cms-live-preview
+# @riaz9191/cms-live-preview
 
 Shared live-preview / inline-editing kit for CMS-driven sites: the
 context, editable field/section/image components, and postMessage
 listeners that let a site render itself inside the CMS's preview
 iframe and be edited in place.
 
+Published privately to GitHub Packages — the repo stays private, but
+installs are a normal versioned `npm install`, no git URLs or SSH keys
+involved.
+
 ## Install
 
-```json
-"@pen/cms-live-preview": "github:riaz9191/pen-cms-preview#v0.1.1"
+Each consuming project needs an `.npmrc` (project-level is fine, not
+secret) pointing the scope at GitHub's registry:
+
+```
+@riaz9191:registry=https://npm.pkg.github.com
 ```
 
-then `npm install`.
+Then, since GitHub Packages requires auth to *read* packages even
+when the repo is private (there's no anonymous install), each
+machine/CI needs a token with `read:packages` scope available as
+`NODE_AUTH_TOKEN`, referenced from `~/.npmrc` (not committed):
+
+```
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+Generate the token at GitHub → Settings → Developer settings →
+Personal access tokens (classic) → scope: `read:packages`.
+
+Then in `package.json`:
+
+```json
+"@riaz9191/cms-live-preview": "^0.1.2"
+```
 
 ## Wiring into a site
 
@@ -22,7 +45,7 @@ import {
   CmsPreviewListener,
   CmsEditModeListener,
   CmsImageEditManager,
-} from "@pen/cms-live-preview";
+} from "@riaz9191/cms-live-preview";
 
 <CmsPreviewProvider>
   <CmsPreviewListener />
@@ -33,7 +56,7 @@ import {
 
 ```tsx
 // a page component
-import { useCmsPreview, EditableField, EditableSection } from "@pen/cms-live-preview";
+import { useCmsPreview, EditableField, EditableSection } from "@riaz9191/cms-live-preview";
 
 const contents = useCmsPreview(sectionId, serverContents);
 
@@ -45,7 +68,8 @@ const contents = useCmsPreview(sectionId, serverContents);
 
 Images: tag the `<img>` itself with `data-cms-field="..."` inside an
 `EditableSection` — `CmsImageEditManager` finds it via DOM scan, no
-per-image wiring needed.
+per-image wiring needed. Flat content fields only (see the
+"Known limitations" note below).
 
 ## Tailwind v4 setup (required)
 
@@ -61,22 +85,33 @@ Add to the consuming site's global CSS:
 
 ```css
 @import "tailwindcss";
-@source "../../node_modules/@pen/cms-live-preview/dist";
+@source "../../node_modules/@riaz9191/cms-live-preview/dist";
 ```
 
 (adjust the `../../` depth to however many levels your CSS file sits
 below the project root).
 
+## Known limitations
+
+- `CmsImageEditManager` only supports flat content fields (e.g.
+  `top_left_image`). It has no equivalent of `EditableField`'s
+  `buildValue` callback, so images inside an array of entities (a
+  campus's image, a course's image, a news story's image) aren't
+  wireable yet without corrupting the array on save.
+
 ## Releasing a fix
 
+Bump `version` in `package.json`, commit, tag, and push the tag —
+pushing a `vX.Y.Z` tag triggers `.github/workflows/publish.yml`,
+which builds and publishes to GitHub Packages automatically (using
+the repo's own `GITHUB_TOKEN`, no manual publish token needed):
+
 ```sh
-# bump version in package.json, then:
 git commit -am "..."
 git tag vX.Y.Z
-git push origin main --tags
+git push origin main
+git push origin vX.Y.Z
 ```
 
-Then in each consuming site: bump the `#vX.Y.Z` tag in `package.json`
-and run `npm install @pen/cms-live-preview@github:riaz9191/pen-cms-preview#vX.Y.Z`
-explicitly — plain `npm install` does not reliably re-resolve a
-changed git tag on its own.
+Then in each consuming site, bump the version range in `package.json`
+and run `npm install`.
