@@ -5,36 +5,28 @@ context, editable field/section/image components, and postMessage
 listeners that let a site render itself inside the CMS's preview
 iframe and be edited in place.
 
-Published privately to GitHub Packages — the repo stays private, but
-installs are a normal versioned `npm install`, no git URLs or SSH keys
-involved.
+This repo is **public** and consumed as a git dependency — no npm
+registry, no tokens, no per-person setup. Anyone can `npm install`
+it; there's nothing secret in here (no API keys, no business logic).
+
+## One-time setup per machine (only needed once, ever)
+
+GitHub's SSH endpoint always requires a registered key, even for
+public repos — but npm's `github:owner/repo` shorthand tries SSH by
+default. Run this once per machine so npm/git transparently use
+HTTPS instead (which works with zero auth for a public repo):
+
+```sh
+git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+```
 
 ## Install
 
-Each consuming project needs an `.npmrc` (project-level is fine, not
-secret) pointing the scope at GitHub's registry:
-
-```
-@riaz9191:registry=https://npm.pkg.github.com
-```
-
-Then, since GitHub Packages requires auth to *read* packages even
-when the repo is private (there's no anonymous install), each
-machine/CI needs a token with `read:packages` scope available as
-`NODE_AUTH_TOKEN`, referenced from `~/.npmrc` (not committed):
-
-```
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-```
-
-Generate the token at GitHub → Settings → Developer settings →
-Personal access tokens (classic) → scope: `read:packages`.
-
-Then in `package.json`:
-
 ```json
-"@riaz9191/cms-live-preview": "^0.1.2"
+"@riaz9191/cms-live-preview": "git+https://github.com/riaz9191/pen-cms-preview.git#v0.1.3"
 ```
+
+then `npm install`.
 
 ## Wiring into a site
 
@@ -68,8 +60,8 @@ const contents = useCmsPreview(sectionId, serverContents);
 
 Images: tag the `<img>` itself with `data-cms-field="..."` inside an
 `EditableSection` — `CmsImageEditManager` finds it via DOM scan, no
-per-image wiring needed. Flat content fields only (see the
-"Known limitations" note below).
+per-image wiring needed. Flat content fields only (see "Known
+limitations" below).
 
 ## Tailwind v4 setup (required)
 
@@ -101,17 +93,15 @@ below the project root).
 
 ## Releasing a fix
 
-Bump `version` in `package.json`, commit, tag, and push the tag —
-pushing a `vX.Y.Z` tag triggers `.github/workflows/publish.yml`,
-which builds and publishes to GitHub Packages automatically (using
-the repo's own `GITHUB_TOKEN`, no manual publish token needed):
-
 ```sh
+# bump version in package.json, then:
 git commit -am "..."
 git tag vX.Y.Z
 git push origin main
 git push origin vX.Y.Z
 ```
 
-Then in each consuming site, bump the version range in `package.json`
-and run `npm install`.
+Then in each consuming site: bump the `#vX.Y.Z` tag in `package.json`
+and run `npm install @riaz9191/cms-live-preview@git+https://github.com/riaz9191/pen-cms-preview.git#vX.Y.Z`
+explicitly — plain `npm install` does not reliably re-resolve a
+changed git tag on its own.
