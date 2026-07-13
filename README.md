@@ -23,7 +23,7 @@ git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
 ## Install
 
 ```json
-"@riaz9191/cms-live-preview": "git+https://github.com/riaz9191/pen-cms-preview.git#v0.1.3"
+"@riaz9191/cms-live-preview": "git+https://github.com/riaz9191/pen-cms-preview.git#v0.1.4"
 ```
 
 then `npm install`.
