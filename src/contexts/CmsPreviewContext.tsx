@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import { setIn } from "../lib/path";
 
 type SectionContent = Record<string, unknown>;
 type PreviewMap = Record<string, SectionContent>; // keyed by component_type
@@ -75,9 +76,11 @@ export function CmsPreviewProvider({
   };
 
   const updateField = (sectionId: string, fieldName: string, value: unknown) => {
+    // `fieldName` may be a dot-path ("teammembercards.3.name"); setIn updates
+    // the nested target immutably. A plain key behaves like the old shallow set.
     setPreview((prev) => ({
       ...prev,
-      [sectionId]: { ...(prev[sectionId] || {}), [fieldName]: value },
+      [sectionId]: setIn(prev[sectionId] || {}, fieldName, value),
     }));
     setSectionSaveState((prev) => ({ ...prev, [sectionId]: "dirty" }));
     window.parent.postMessage(
@@ -96,12 +99,15 @@ export function CmsPreviewProvider({
     // uploaded URL automatically once the CMS's confirmed content echoes
     // back through setPreviewSections (which replaces this wholesale).
     const objectUrl = URL.createObjectURL(file);
+    // `fieldName` may be a dot-path into an array item
+    // ("teammembercards.3.image"); setIn writes the nested target immutably so
+    // sibling items are preserved (a shallow set would drop them).
     setPreview((prev) => ({
       ...prev,
-      [sectionId]: {
-        ...(prev[sectionId] || {}),
-        [fieldName]: { url: objectUrl, alt: currentAlt || "" },
-      },
+      [sectionId]: setIn(prev[sectionId] || {}, fieldName, {
+        url: objectUrl,
+        alt: currentAlt || "",
+      }),
     }));
     setSectionSaveState((prev) => ({ ...prev, [sectionId]: "dirty" }));
     window.parent.postMessage(
