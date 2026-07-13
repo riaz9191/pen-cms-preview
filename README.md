@@ -1,4 +1,4 @@
-# @riaz9191/cms-live-preview
+# @riaz91/cms-live-preview
 
 Shared live-preview / inline-editing kit for CMS-driven sites: the
 context, editable field/section/image components, and postMessage
@@ -23,7 +23,7 @@ git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
 ## Install
 
 ```json
-"@riaz9191/cms-live-preview": "git+https://github.com/riaz9191/pen-cms-preview.git#v0.1.4"
+"@riaz91/cms-live-preview": "git+https://github.com/riaz9191/pen-cms-preview.git#v0.1.5"
 ```
 
 then `npm install`.
@@ -37,7 +37,7 @@ import {
   CmsPreviewListener,
   CmsEditModeListener,
   CmsImageEditManager,
-} from "@riaz9191/cms-live-preview";
+} from "@riaz91/cms-live-preview";
 
 <CmsPreviewProvider>
   <CmsPreviewListener />
@@ -48,7 +48,7 @@ import {
 
 ```tsx
 // a page component
-import { useCmsPreview, EditableField, EditableSection } from "@riaz9191/cms-live-preview";
+import { useCmsPreview, EditableField, EditableSection } from "@riaz91/cms-live-preview";
 
 const contents = useCmsPreview(sectionId, serverContents);
 
@@ -77,7 +77,7 @@ Add to the consuming site's global CSS:
 
 ```css
 @import "tailwindcss";
-@source "../../node_modules/@riaz9191/cms-live-preview/dist";
+@source "../../node_modules/@riaz91/cms-live-preview/dist";
 ```
 
 (adjust the `../../` depth to however many levels your CSS file sits
@@ -102,6 +102,6 @@ git push origin vX.Y.Z
 ```
 
 Then in each consuming site: bump the `#vX.Y.Z` tag in `package.json`
-and run `npm install @riaz9191/cms-live-preview@git+https://github.com/riaz9191/pen-cms-preview.git#vX.Y.Z`
+and run `npm install @riaz91/cms-live-preview@git+https://github.com/riaz9191/pen-cms-preview.git#vX.Y.Z`
 explicitly — plain `npm install` does not reliably re-resolve a
 changed git tag on its own.
