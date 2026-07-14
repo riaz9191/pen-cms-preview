@@ -5,28 +5,13 @@ context, editable field/section/image components, and postMessage
 listeners that let a site render itself inside the CMS's preview
 iframe and be edited in place.
 
-This repo is **public** and consumed as a git dependency — no npm
-registry, no tokens, no per-person setup. Anyone can `npm install`
-it; there's nothing secret in here (no API keys, no business logic).
-
-## One-time setup per machine (only needed once, ever)
-
-GitHub's SSH endpoint always requires a registered key, even for
-public repos — but npm's `github:owner/repo` shorthand tries SSH by
-default. Run this once per machine so npm/git transparently use
-HTTPS instead (which works with zero auth for a public repo):
-
-```sh
-git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
-```
+This repo is **public** and available on npm — install it with `npm install @riaz91/cms-live-preview`. There's nothing secret in here (no API keys, no business logic).
 
 ## Install
 
-```json
-"@riaz91/cms-live-preview": "npm install @riaz91/cms-live-preview"
+```bash
+npm install @riaz91/cms-live-preview
 ```
-
-then `npm install`.
 
 ## Wiring into a site
 
