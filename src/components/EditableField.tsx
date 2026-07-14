@@ -4,7 +4,13 @@
 import { useCmsPreviewContext } from "../contexts/CmsPreviewContext";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import InlineSaveButton from "./InlineSaveButton";
+import InlineEditHint from "./InlineEditHint";
 import MarkupRenderer, { type MarkupClassNames } from "./MarkupRenderer";
+
+// Edit-mode affordance: a clearly-visible ring on hover/focus so it's obvious
+// the element is editable (paired with a floating "Edit" chip on hover).
+const EDIT_AFFORDANCE_CLASS =
+  "cursor-text rounded-sm outline-none transition hover:ring-2 hover:ring-[#00FFD2] focus:ring-2 focus:ring-[#00FFD2]";
 
 interface EditableFieldProps {
   sectionId: string;
@@ -73,6 +79,8 @@ const EditableField = forwardRef<HTMLElement, EditableFieldProps>(function Edita
   // MarkupRenderer's re-parse (fresh DOM nodes every render) can't fight the
   // browser's own contentEditable cursor/selection mid-edit.
   const [isFocused, setIsFocused] = useState(false);
+  // Hover state (edit mode only) — drives the floating "Edit" hint chip.
+  const [hovered, setHovered] = useState(false);
   const [frozenValue, setFrozenValue] = useState(value);
   const saveState = sectionSaveState[sectionId];
   // The raw value we last sent via updateField, so we can tell "value
@@ -158,11 +166,14 @@ const EditableField = forwardRef<HTMLElement, EditableFieldProps>(function Edita
           onFocus={() => setIsFocused(true)}
           onInput={syncDirty}
           onBlur={commit}
-          className={`${className ?? ""} cursor-text rounded-sm outline-none transition hover:ring-2 hover:ring-[#00FFD2]/60 focus:ring-2 focus:ring-[#00FFD2]`}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={`${className ?? ""} ${EDIT_AFFORDANCE_CLASS}`}
           {...passthroughProps}
         >
           <MarkupRenderer htmlString={frozenValue ?? ""} classNames={classNames} />
         </div>
+        <InlineEditHint anchorRef={innerRef} visible={hovered && !dirty} />
         <InlineSaveButton
           anchorRef={innerRef}
           sectionId={sectionId}
@@ -177,13 +188,11 @@ const EditableField = forwardRef<HTMLElement, EditableFieldProps>(function Edita
     <>
       <Tag
         ref={innerRef}
-        className={`${className ?? ""} ${
-          editMode
-            ? "cursor-text rounded-sm outline-none transition hover:ring-2 hover:ring-[#00FFD2]/60 focus:ring-2 focus:ring-[#00FFD2]"
-            : ""
-        }`}
+        className={`${className ?? ""} ${editMode ? EDIT_AFFORDANCE_CLASS : ""}`}
         contentEditable={editMode || undefined}
         suppressContentEditableWarning={editMode || undefined}
+        onMouseEnter={editMode ? () => setHovered(true) : undefined}
+        onMouseLeave={editMode ? () => setHovered(false) : undefined}
         onInput={editMode ? syncDirty : undefined}
         onBlur={editMode ? commit : undefined}
         onKeyDown={
@@ -206,12 +215,15 @@ const EditableField = forwardRef<HTMLElement, EditableFieldProps>(function Edita
         {value}
       </Tag>
       {editMode && (
-        <InlineSaveButton
-          anchorRef={innerRef}
-          sectionId={sectionId}
-          visible={dirty}
-          beforeSave={() => innerRef.current?.blur()}
-        />
+        <>
+          <InlineEditHint anchorRef={innerRef} visible={hovered && !dirty} />
+          <InlineSaveButton
+            anchorRef={innerRef}
+            sectionId={sectionId}
+            visible={dirty}
+            beforeSave={() => innerRef.current?.blur()}
+          />
+        </>
       )}
     </>
   );

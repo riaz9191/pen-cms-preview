@@ -5,6 +5,7 @@ export { default as EditableField } from "./components/EditableField";
 export { default as EditableSection } from "./components/EditableSection";
 export { default as CmsImageEditManager } from "./components/CmsImageEditManager";
 export { default as InlineSaveButton } from "./components/InlineSaveButton";
+export { default as InlineEditHint } from "./components/InlineEditHint";
 export { default as CmsPreviewListener } from "./components/CmsPreviewListener";
 export { default as CmsEditModeListener } from "./components/CmsEditModeListener";
 export { default as MarkupRenderer } from "./components/MarkupRenderer";
