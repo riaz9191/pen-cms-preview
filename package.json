@@ -1,6 +1,6 @@
 {
-  "name": "@riaz9191/cms-live-preview",
-  "version": "0.1.5",
+  "name": "@riaz91/cms-live-preview",
+  "version": "0.1.6",
   "private": false,
   "type": "module",
   "license": "UNLICENSED",
@@ -21,6 +21,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup",
     "prepare": "npm run build",
